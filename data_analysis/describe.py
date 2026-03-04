@@ -1,53 +1,9 @@
 import csv
 import sys
+import os
 
-
-def count(values):
-    count = 0
-    for value in values:
-        if value == value:
-            count += 1
-    return count
-
-
-def mean(values):
-    total = 0
-    len = count(values)
-    if len == 0:
-        return 0
-    for value in values:
-        if value == value:
-            total += value
-    return total / len
-
-
-def std(values):
-    mean_value = mean(values)
-    total = 0
-    len = count(values)
-    if len == 0:
-        return 0
-    for value in values:
-        if value == value:
-            total += (value - mean_value) ** 2
-    return (total / len) ** 0.5
-
-
-def min(values):
-    min_value = values[0]
-    for value in values:
-        if value == value and value < min_value:
-            min_value = value
-    return min_value
-
-
-def max(values):
-    max_value = values[0]
-    for value in values:
-        if value == value and value > max_value:
-            max_value = value
-    return max_value
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import utils.utils as utils
 
 def describe():
     columns = {}
@@ -74,9 +30,10 @@ def describe():
                     if key not in columns:
                         columns[key] = []
                     try:
-                        num = float(value)
-                        if num == num:
-                            columns[key].append(num)
+                        if (value is not None):
+                            num = float(value)
+                            if num == num:
+                                columns[key].append(num)
                     except ValueError:
                         continue
 
@@ -100,14 +57,14 @@ def describe():
         q2 = sorted_values[len(sorted_values) // 2]
         q3 = sorted_values[len(sorted_values) * 3 // 4]
 
-        results["count"].append(count(values))
-        results["mean"].append(mean(values))
-        results["std"].append(std(values))
-        results["min"].append(min(values))
+        results["count"].append(utils.count(values))
+        results["mean"].append(utils.mean(values))
+        results["std"].append(utils.std(values))
+        results["min"].append(utils.min(values))
         results["25%"].append(q1)
         results["50%"].append(q2)
         results["75%"].append(q3)
-        results["max"].append(max(values))
+        results["max"].append(utils.max(values))
 
     COL_WIDTH = 18
 
