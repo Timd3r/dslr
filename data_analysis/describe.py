@@ -23,6 +23,10 @@ def describe():
     where the keys are the column names 
     and the values are lists of numeric values
     """
+    if len(sys.argv) < 2:
+        print("Usage: python describe.py <dataset.csv>")
+        return
+
     try:
         with open(sys.argv[1], "r") as data:
             reader = csv.DictReader(data)

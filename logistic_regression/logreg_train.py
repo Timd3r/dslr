@@ -1,6 +1,7 @@
 import math
 import os
 import sys
+import json
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import utils.utils as utils
@@ -82,21 +83,36 @@ def replace_nan(data):
 
 
 def get_clean_data():
-    with open("data/dataset_train.csv", "r") as f:
-        lines = f.readlines()
-        data = clean_data(lines)
-        data = replace_nan(data)
-        print(data[4])
-        means = []
-        stds = []
-        feature_columns = zip(*[row[1:] for row in data])
+    train_file = "data/dataset_train.csv"
+    if not os.path.exists(train_file):
+        print(f"Error: Training dataset '{train_file}' not found.")
+        print("Please ensure the training dataset is in the 'data/' folder.")
+        sys.exit(1)
 
-        for col in feature_columns:
-            mean, std = get_stats(col)
-            means.append(mean)
-            stds.append(std)
-        scaled_data = scale_data(data, means, stds)
-        return scaled_data
+    try:
+        with open(train_file, "r") as f:
+            lines = f.readlines()
+    except Exception as e:
+        print(f"Error reading training data: {e}")
+        sys.exit(1)
+
+    if len(lines) < 2:
+        print("Error: Training dataset is empty or has no data rows.")
+        sys.exit(1)
+
+    data = clean_data(lines)
+    data = replace_nan(data)
+    print(data[4])
+    means = []
+    stds = []
+    feature_columns = zip(*[row[1:] for row in data])
+
+    for col in feature_columns:
+        mean, std = get_stats(col)
+        means.append(mean)
+        stds.append(std)
+    scaled_data = scale_data(data, means, stds)
+    return scaled_data, means, stds
 
 
 def sigmoid(z):
@@ -104,13 +120,14 @@ def sigmoid(z):
 
 
 def train():
-    data = get_clean_data()
+    data, means, stds = get_clean_data()
     houses = [0, 1, 2, 3]
     all_weights = {}
     X = [[1.0] + row[1:] for row in data]  # Add bias term
     learn_rate = 0.1
     iterations = 1000
     m = len(X)
+
     for house in houses:
         y = [1 if row[0] == house else 0 for row in data]
         weights = [0.0] * len(X[0])
@@ -125,7 +142,15 @@ def train():
             for j in range(len(weights)):
                 weights[j] -= learn_rate * gradeients[j] / m
         all_weights[house] = weights
-    print(all_weights)
+
+    model_data = {"weights": all_weights, "means": means, "stds": stds}
+    try:
+        with open("data/weights.json", "w") as f:
+            json.dump(model_data, f)
+    except Exception as e:
+        print(f"Error saving weights: {e}")
+        sys.exit(1)
+    print("Training complete. Weights and stats saved to data/weights.json")
 
 
 if __name__ == "__main__":
