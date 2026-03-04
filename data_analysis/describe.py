@@ -30,9 +30,10 @@ def describe():
                     if key not in columns:
                         columns[key] = []
                     try:
-                        num = float(value)
-                        if num == num:
-                            columns[key].append(num)
+                        if (value is not None):
+                            num = float(value)
+                            if num == num:
+                                columns[key].append(num)
                     except ValueError:
                         continue
 
