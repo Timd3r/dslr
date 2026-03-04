@@ -6,6 +6,9 @@ import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import utils.utils as utils
 
+# Columns to keep (indices into parts[6:]), dropping Arithmancy(0), DADA(3), Care of Magical Creatures(10)
+KEEP_INDICES = [1, 2, 4, 5, 6, 7, 8, 9, 11, 12]
+
 
 def get_stats(data):
     mean = utils.mean(data)
@@ -45,10 +48,11 @@ def clean_data(lines):
         house_name = parts[1].strip()
         house_val = house_map.get(house_name, float("nan"))
 
-        # 3. Extract only Numeric Features (6 to end)
+        # 3. Extract only Numeric Features (6 to end), filtering by Pair Plot results
+        raw_features = parts[6:]
         features = []
-        for val in parts[6:]:
-            val = val.strip()
+        for i in KEEP_INDICES:
+            val = raw_features[i].strip()
             try:
                 features.append(float(val))
             except ValueError:

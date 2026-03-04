@@ -6,6 +6,9 @@ import sys
 # House mappings corresponding to the label encoding in train
 HOUSE_MAP = {0: "Gryffindor", 1: "Hufflepuff", 2: "Ravenclaw", 3: "Slytherin"}
 
+# Columns to keep (indices into parts[6:]), dropping Arithmancy(0), DADA(3), Care of Magical Creatures(10)
+KEEP_INDICES = [1, 2, 4, 5, 6, 7, 8, 9, 11, 12]
+
 
 def sigmoid(z):
     # Cap z to prevent math overflow errors
@@ -26,13 +29,14 @@ def load_test_data(filepath, means):
         index = parts[0].strip()
         indices.append(index)
 
+        raw_features = parts[6:]
         features = []
-        for i, val in enumerate(parts[6:]):
-            val = val.strip()
+        for j, i in enumerate(KEEP_INDICES):
+            val = raw_features[i].strip()
             try:
                 features.append(float(val))
             except ValueError:
-                features.append(means[i])
+                features.append(means[j])
 
         dataset.append(features)
 
