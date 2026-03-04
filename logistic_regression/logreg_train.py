@@ -1,4 +1,5 @@
 import os
+import random
 import sys
 import math
 
@@ -13,20 +14,21 @@ def get_stats(data):
 
 def scale_data(data, means, stds):
     scaled_data = []
+    print("means:", len(means))
+    print("rows:", len(data[0][1:]))
     for row in data:
         scaled_row = []
-        for i, value in enumerate(row[2:]): # Skip house and hand columns
+        for i, value in enumerate(row[1:]): # Skip house columns
             mean = means[i]
             std = stds[i]
             scaled_value = (value - mean) / std if std != 0 else 0
             scaled_row.append(scaled_value)
-        scaled_data.append([row[0], row[1]] + scaled_row) # Keep house and hand values
+        scaled_data.append([row[0]] + scaled_row) # Keep house values
     return scaled_data
 
 def clean_data(lines):
     dataset = []
     house_map = {"Gryffindor": 0, "Hufflepuff": 1, "Ravenclaw": 2, "Slytherin": 3, "nan": float('nan')}
-    hand_map = {"Left": 0, "Right": 1, "nan": float('nan')}
     # Skip header
     for line in lines[1:]:
         parts = line.split(",")
@@ -34,10 +36,6 @@ def clean_data(lines):
         # 1. Handle the House (Label Encoding)
         house_name = parts[1].strip()
         house_val = house_map.get(house_name, float('nan'))
-
-        # 2. Handle the Hand (Label Encoding)
-        hand_name = parts[5].strip()
-        hand_val = hand_map.get(hand_name, float('nan'))
 
         # 3. Extract only Numeric Features (6 to end)
         features = []
@@ -48,15 +46,15 @@ def clean_data(lines):
             except ValueError:
                 features.append(float('nan')) # Keep as NaN to fill later
         
-        # Combine [House_ID, Hand_ID, Feature1, Feature2, ...]
-        dataset.append([house_val, hand_val] + features)
+        # Combine [House_ID, Feature1, Feature2, ...]
+        dataset.append([house_val] + features)
         
     return dataset
 
 #replace nan with the mean of the column
 def replace_nan(data):
     cleaned_data = []
-    feature_columns = zip(*[row[2:] for row in data])
+    feature_columns = zip(*[row[1:] for row in data])
     means = []
     for col in feature_columns:
         mean = utils.mean([x for x in col if not (isinstance(x, float) and x != x)])
@@ -64,11 +62,11 @@ def replace_nan(data):
     for row in data:
         new_row = []
         for i, val in enumerate(row):
-            if i < 2: # Keep house and hand values
+            if i < 1: # Keep house value as is
                 new_row.append(val)
             else: # Replace NaN with mean of column
                 if isinstance(val, float) and val != val:
-                    new_row.append(means[i-2])
+                    new_row.append(means[i-1])
                 else:
                     new_row.append(val)
         cleaned_data.append(new_row)
@@ -82,7 +80,7 @@ def get_clean_data():
         print(data[4])
         means = []
         stds = []
-        feature_columns = zip(*[row[2:] for row in data])
+        feature_columns = zip(*[row[1:] for row in data])
         
         for col in feature_columns:
             mean, std = get_stats(col)
@@ -97,6 +95,31 @@ def sigmoid(z):
 
 def train():
     data = get_clean_data()
+    houses = [0,1,2,3]
+    all_weights = {}
+    X = [[1.0] + row[1:] for row in data] # Add bias term
+    learn_rate = 0.1
+    iterations = 1000
+    m = len(X)
+    for house in houses:
+        y = [1 if row[0] == house else 0 for row in data]
+        weights = [0.0] * len(X[0])
+        for _ in range(iterations):
+            gradeients = [0.0] * len(X[0])
+            for i in range(m):
+                z = sum(X[i][j] * weights[j] for j in range(len(weights)))
+                pred = sigmoid(z)
+                error = pred - y[i]
+                for j in range(len(weights)):
+                    gradeients[j] += error * X[i][j]
+            for j in range(len(weights)):
+                weights[j] -= learn_rate * gradeients[j] / m
+        all_weights[house] = weights
+    print(all_weights)
+            
+
+
+
     
 
 if __name__ == "__main__":
