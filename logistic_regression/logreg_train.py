@@ -18,8 +18,6 @@ def get_stats(data):
 
 def scale_data(data, means, stds):
     scaled_data = []
-    print("means:", len(means))
-    print("rows:", len(data[0][1:]))
     for row in data:
         scaled_row = []
         for i, value in enumerate(row[1:]):  # Skip house columns
@@ -106,7 +104,6 @@ def get_clean_data():
 
     data = clean_data(lines)
     data = replace_nan(data)
-    print(data[4])
     means = []
     stds = []
     feature_columns = zip(*[row[1:] for row in data])
@@ -120,6 +117,8 @@ def get_clean_data():
 
 
 def sigmoid(z):
+    if z < -700:
+        return 0
     return 1 / (1 + math.exp(-z))
 
 
