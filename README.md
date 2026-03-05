@@ -74,6 +74,10 @@ dslr/
 ├── utils/                  # Shared helpers & evaluation
 │   ├── utils.py
 │   └── evaluate.py
+├── test/                   # Testing utilities
+│   ├── setup_test.py
+│   ├── split_data.py
+│   └── tester.py
 ├── requirements.txt
 └── README.md
 ```

@@ -1,22 +1,23 @@
 import csv
 import os
 
+
 def load_csv_no_header(filepath):
     """Loads a headerless CSV into a dictionary {Index: House}."""
     data = {}
-    paths_to_check = [filepath, os.path.join('test', filepath)]
-    
+    paths_to_check = [filepath, os.path.join("test", filepath)]
+
     actual_path = None
     for p in paths_to_check:
         if os.path.exists(p):
             actual_path = p
             break
-            
+
     if not actual_path:
         print(f"Error: Could not find {filepath}")
         return None
 
-    with open(actual_path, 'r') as f:
+    with open(actual_path, "r") as f:
         # We don't use DictReader because your output has no header
         reader = csv.reader(f)
         for row in reader:
@@ -30,10 +31,11 @@ def load_csv_no_header(filepath):
                 data[idx] = house
     return data
 
+
 def main():
     # File paths
-    truth_file = 'dataset_truth.csv' # Created by split_data.py
-    pred_file = 'houses.csv'         # Created by logreg_predict.py
+    truth_file = "dataset_truth.csv"  # Created by split_data.py
+    pred_file = "houses.csv"  # Created by logreg_predict.py
 
     truth = load_csv_no_header(truth_file)
     preds = load_csv_no_header(pred_file)
@@ -53,12 +55,12 @@ def main():
             evaluated += 1
             true_h = truth[idx]
             pred_h = preds[idx]
-            
+
             status = "✅" if true_h == pred_h else "❌"
             if true_h == pred_h:
                 correct += 1
-            
-            if evaluated <= 15: # Show first 15 matches
+
+            if evaluated <= 15:  # Show first 15 matches
                 print(f"{idx:<10} | {true_h:<15} | {pred_h:<15} | {status}")
 
     print("-" * 65)
@@ -71,6 +73,7 @@ def main():
         print(f"Accuracy: {accuracy:.2f}% ({correct}/{evaluated})")
         if accuracy >= 98.0:
             print("✨ 98% REACHED! ✨")
+
 
 if __name__ == "__main__":
     main()
