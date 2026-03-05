@@ -57,7 +57,7 @@ def main():
         "Pair Plot of Hogwarts Courses", y=1.02, fontsize=20, fontweight="bold"
     )
 
-    output_file = "images/pair_plot.png"
+    output_file = "pair_plot.png"
     plt.savefig(output_file, dpi=300)
     print(f"\nSuccess! The pair plot has been saved to '{output_file}'.")
     print("Please open the image file to view the matrix.\n")

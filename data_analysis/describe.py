@@ -1,9 +1,10 @@
 import csv
-import sys
 import os
+import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import utils.utils as utils
+
 
 def describe():
     columns = {}
@@ -22,6 +23,10 @@ def describe():
     where the keys are the column names 
     and the values are lists of numeric values
     """
+    if len(sys.argv) < 2:
+        print("Usage: python describe.py <dataset.csv>")
+        return
+
     try:
         with open(sys.argv[1], "r") as data:
             reader = csv.DictReader(data)
@@ -30,7 +35,7 @@ def describe():
                     if key not in columns:
                         columns[key] = []
                     try:
-                        if (value is not None):
+                        if value is not None:
                             num = float(value)
                             if num == num:
                                 columns[key].append(num)

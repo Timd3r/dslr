@@ -88,7 +88,7 @@ def main():
         fig.delaxes(axes[j])
 
     plt.tight_layout(rect=[0, 0, 1, 0.95])  # type: ignore
-    plt.savefig("images/histogram_grid.png", dpi=300)
+    plt.savefig("histogram_grid.png", dpi=300)
 
     print("\nBased on the visualizations, answer the following question:")
     print(

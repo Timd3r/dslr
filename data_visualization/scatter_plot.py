@@ -58,7 +58,7 @@ def main():
 
     # Adjust layout and show the plot
     plt.tight_layout()
-    plt.savefig("images/scatter_plot.png", dpi=300)
+    plt.savefig("scatter_plot.png", dpi=300)
 
     print("\nBased on the visualization, answer the following question:")
     print("What are the two features that are similar?")
