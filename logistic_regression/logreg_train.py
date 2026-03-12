@@ -134,7 +134,7 @@ def train():
     for house in houses:
         y = [1 if row[0] == house else 0 for row in data]
         weights = [0.0] * len(X[0])
-        for _ in range(iterations):
+        for iteration in range(iterations):
             gradeients = [0.0] * len(X[0])
             for i in range(m):
                 z = sum(X[i][j] * weights[j] for j in range(len(weights)))
@@ -144,6 +144,14 @@ def train():
                     gradeients[j] += error * X[i][j]
             for j in range(len(weights)):
                 weights[j] -= learn_rate * gradeients[j] / m
+            #process bar
+            percent = (iteration + 1) / iterations
+            bar_length = 20
+            filled_length = int(bar_length * percent)
+            bar = '█' * filled_length + '-' * (bar_length - filled_length)
+            sys.stdout.write(f'\rProgress house {house + 1}: |{bar}| {percent:.1%}')
+            sys.stdout.flush()
+        print()
         all_weights[house] = weights
 
     model_data = {"weights": all_weights, "means": means, "stds": stds}
