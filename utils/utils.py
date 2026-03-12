@@ -43,3 +43,15 @@ def max(values):
         if value == value and value > max_value:
             max_value = value
     return max_value
+
+
+def unique(values):
+    uniques = []
+    for value in values:
+        new = True
+        for val in uniques:
+            if val == value:
+                new = False
+        if new:
+            uniques.append(value)
+    return count(uniques)

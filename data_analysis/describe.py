@@ -7,9 +7,15 @@ import utils.utils as utils
 
 
 def describe():
+    """ 
+    read the csv file and store the numeric values in a dictionary 
+    where the keys are the column names 
+    and the values are lists of numeric values
+    """
     columns = {}
     results = {
         "count": [],
+        "unique": [],
         "mean": [],
         "std": [],
         "min": [],
@@ -18,11 +24,7 @@ def describe():
         "75%": [],
         "max": [],
     }
-    """ 
-    read the csv file and store the numeric values in a dictionary 
-    where the keys are the column names 
-    and the values are lists of numeric values
-    """
+
     if len(sys.argv) < 2:
         print("Usage: python describe.py <dataset.csv>")
         return
@@ -30,12 +32,18 @@ def describe():
     try:
         with open(sys.argv[1], "r") as data:
             reader = csv.DictReader(data)
+            #turn col 2 to numeric values and store them in the columns dictionary
+            houses = {"Hufflepuff" : 0, "Ravenclaw": 1, "Gryffindor": 2, "Slytherin": 3}
             for row in reader:
                 for key, value in row.items():
                     if key not in columns:
                         columns[key] = []
                     try:
-                        if value is not None:
+                        if key == "Hogwarts House":
+                            num = houses.get(value, None)
+                            if num is not None:
+                                columns[key].append(num)
+                        elif value is not None:
                             num = float(value)
                             if num == num:
                                 columns[key].append(num)
@@ -63,6 +71,7 @@ def describe():
         q3 = sorted_values[len(sorted_values) * 3 // 4]
 
         results["count"].append(utils.count(values))
+        results["unique"].append(utils.unique(values))
         results["mean"].append(utils.mean(values))
         results["std"].append(utils.std(values))
         results["min"].append(utils.min(values))
